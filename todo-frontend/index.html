@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>TODO一覧</title>
+    <script src="js/index.js" defer></script>
+</head>
+<body>
+    <h1>ログイン</h1>
+    <form id="loginForm">
+        <label>ユーザー名
+            <input id="usernameText" type="text">
+        </label>
+        <label>パスワード
+            <input id="passwordText" type="password">
+        </label>
+        <button id="loginButton">ログイン</button>
+    </form>
+    <hr>
+    <h1>ログアウト</h1>
+    <form id="logoutForm">
+        <button id="logoutButton">ログアウト</button>
+    </form>
+    <hr>
+    <h1>TODO一覧</h1>
+    <form id="todoForm">
+        <label>追加するTODO
+            <input id="descriptionText" type="text">
+        </label>
+        <button id="addTodoButton">追加</button>
+    </form>
+    <ul id="todoList">
+    </ul>
+</body>
+</html>
