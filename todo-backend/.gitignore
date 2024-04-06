@@ -1,3 +1,6 @@
+start-service.sh
+stop-service.sh
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

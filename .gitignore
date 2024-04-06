@@ -3,6 +3,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Terraform
+.terraform
+terraform.tfstate.*
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
