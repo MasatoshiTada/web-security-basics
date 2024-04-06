@@ -2,8 +2,9 @@
  * CSRFトークン取得
  */
 const getCsrfToken = async () => {
-    const token = await fetch('http://localhost:8080/api/csrf', {
+    const token = await fetch('https://localhost:8080/api/csrf', {
         method: 'GET',
+        credentials: "include",
     }).then(async response => {
         const json = await response.json();
         console.log(json);
@@ -26,8 +27,9 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const username = document.getElementById('usernameText').value;
     const password = document.getElementById('passwordText').value;
     const csrfToken = await getCsrfToken();
-    fetch('http://localhost:8080', {
+    fetch('https://localhost:8080', {
         method: 'POST',
+        credentials: "include",
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
@@ -54,23 +56,24 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
  * TODOの取得
  */
 const loadTodos = () => {
-    fetch('http://localhost:8080/api/todos')
-        .then(async response => {
-            const json = await response.json();
-            if (response.ok) {
-                const todoList = document.getElementById('todoList');
-                todoList.innerHTML = '';
-                for (const todo of json) {
-                    const li = document.createElement('li');
-                    li.innerHTML = todo.description;
-                    todoList.appendChild(li);
-                }
-            } else {
-                alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}、エラーメッセージ=${json.detail}`);
+    fetch('https://localhost:8080/api/todos', {
+        credentials: "include",
+    }).then(async response => {
+        const json = await response.json();
+        if (response.ok) {
+            const todoList = document.getElementById('todoList');
+            todoList.innerHTML = '';
+            for (const todo of json) {
+                const li = document.createElement('li');
+                li.innerHTML = todo.description;
+                todoList.appendChild(li);
             }
-        }).catch(error => {
-            alert(error.message);
-        });
+        } else {
+            alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}、エラーメッセージ=${json.detail}`);
+        }
+    }).catch(error => {
+        alert(error.message);
+    });
 };
 
 /**
@@ -79,8 +82,9 @@ const loadTodos = () => {
 document.getElementById('todoForm').addEventListener('submit', e => {
     e.preventDefault();
     const description = document.getElementById('descriptionText').value;
-    fetch('http://localhost:8080/api/todos', {
+    fetch('https://localhost:8080/api/todos', {
         method: 'POST',
+        credentials: "include",
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': getCsrfToken()
@@ -89,7 +93,7 @@ document.getElementById('todoForm').addEventListener('submit', e => {
         body: JSON.stringify({
             description: description
         })
-    }).then(response=> {
+    }).then(response => {
         if (response.ok) {
             loadTodos();
         } else {

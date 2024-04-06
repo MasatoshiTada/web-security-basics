@@ -23,6 +23,7 @@ public class TodoBackendApplication {
     public DefaultCookieSerializerCustomizer defaultCookieSerializerCustomizer() {
         return (defaultCookieSerializer) -> {
             defaultCookieSerializer.setSameSite("None");
+            defaultCookieSerializer.setUseSecureCookie(true);
         };
     }
 }
