@@ -1,13 +1,16 @@
+const url = (path) => {
+    return 'https://fxqpckzcbm.ap-northeast-1.awsapprunner.com' + path
+}
+
 /**
  * CSRFトークン取得
  */
 const getCsrfToken = async () => {
-    const token = await fetch('https://localhost:8080/api/csrf', {
+    const token = await fetch(url('/api/csrf'), {
         method: 'GET',
         credentials: "include",
     }).then(async response => {
         const json = await response.json();
-        console.log(json);
         if (response.ok) {
             return json.token;
         } else {
@@ -27,7 +30,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const username = document.getElementById('usernameText').value;
     const password = document.getElementById('passwordText').value;
     const csrfToken = await getCsrfToken();
-    fetch('https://localhost:8080', {
+    fetch(url('/login'), {
         method: 'POST',
         credentials: "include",
         headers: {
@@ -39,12 +42,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             password: password
         })
     }).then(async response => {
-        const json = await response.json();
         if (response.ok) {
+            console.log('ログインに成功しました。TODOを取得します。');
             loadTodos();
         } else if (response.status === 401) {
             alert('ユーザー名またはパスワードが違います。');
         } else {
+            const json = await response.json();
             alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}、エラーメッセージ=${json.detail}`);
         }
     }).catch(error => {
@@ -56,7 +60,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
  * TODOの取得
  */
 const loadTodos = () => {
-    fetch('https://localhost:8080/api/todos', {
+    fetch(url('/api/todos'), {
         credentials: "include",
     }).then(async response => {
         const json = await response.json();
@@ -82,7 +86,7 @@ const loadTodos = () => {
 document.getElementById('todoForm').addEventListener('submit', e => {
     e.preventDefault();
     const description = document.getElementById('descriptionText').value;
-    fetch('https://localhost:8080/api/todos', {
+    fetch(url('/api/todos'), {
         method: 'POST',
         credentials: "include",
         headers: {

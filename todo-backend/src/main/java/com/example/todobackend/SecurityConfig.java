@@ -1,6 +1,7 @@
 package com.example.todobackend;
 
-import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
+import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -30,17 +32,19 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-        JsonAuthenticationFilter jsonAuthenticationFilter = new JsonAuthenticationFilter(authenticationManager);
+        HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
+        JsonAuthenticationFilter jsonAuthenticationFilter = new JsonAuthenticationFilter(authenticationManager, securityContextRepository);
         http.addFilterAt(jsonAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)  // 認証フィルターを自作のものに置き換える
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()  // Actuatorのhealthエンドポイントへのアクセスは認証なしでOK
                         .requestMatchers("/login", "/api/csrf").permitAll()  // ログインエンドポイントとCSRFトークンエンドポイントは未認証でもOK
                         .anyRequest().authenticated())  // その他はログイン後のみOK
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))  // デフォルトでは、アクセス制限を設定したページに未認証状態でアクセスすると403を返すので、401を返すように変更
-                        .accessDeniedHandler((req, res, ex) -> res.setStatus(HttpServletResponse.SC_FORBIDDEN)))  // 今回は、403エラー時にヘッダーのみでボディ無しに設定
+                        .accessDeniedHandler((req, res, ex) -> res.setStatus(HttpStatus.FORBIDDEN.value())))  // 今回は、403エラー時にヘッダーのみでボディ無しに設定
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
+                        .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpStatus.OK.value()))
                         .permitAll())
                 .cors(Customizer.withDefaults());  // Spring MVCのCORS設定を使う
         return http.build();
