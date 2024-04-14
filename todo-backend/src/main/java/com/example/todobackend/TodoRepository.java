@@ -32,15 +32,23 @@ public class TodoRepository {
         return todo.withId(newId);
     }
 
+    public int update(Todo todo) {
+        int rows = jdbcClient.sql("UPDATE todo SET description = :description WHERE id = :id")
+                .param("description", todo.description())
+                .param("id", todo.id())
+                .update();
+        return rows;
+    }
+
     public int done(Integer todoId) {
-        int rows = jdbcClient.sql("UPDATE todo SET done = true WHERE id=:id")
+        int rows = jdbcClient.sql("UPDATE todo SET done = true WHERE id = :id")
                 .param("id", todoId)
                 .update();
         return rows;
     }
 
     public int delete(Integer todoId) {
-        int rows = jdbcClient.sql("DELETE FROM todo WHERE id=:id")
+        int rows = jdbcClient.sql("DELETE FROM todo WHERE id = :id")
                 .param("id", todoId)
                 .update();
         return rows;

@@ -12,7 +12,10 @@ public class MvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:9080")
-                .allowCredentials(true);
-        // TODO POSTのための設定追加
+                .allowCredentials(true)
+                .allowedMethods("PUT", "DELETE", "GET", "POST", "PATCH", "OPTIONS")
+                .allowedHeaders("Content-Type", "X-CSRF-TOKEN")
+                .exposedHeaders("*")
+                .maxAge(7200);
     }
 }

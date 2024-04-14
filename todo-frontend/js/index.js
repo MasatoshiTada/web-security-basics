@@ -57,6 +57,32 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 });
 
 /**
+ * ログアウト処理
+ */
+document.getElementById('logoutForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const csrfToken = await getCsrfToken();
+    fetch(url('/logout'), {
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+        },
+    }).then(async response => {
+        if (response.ok) {
+            alert('ログアウトしました。');
+            document.getElementById('todoList').innerHTML = '';
+            document.getElementById('descriptionText').value = '';
+        } else {
+            const json = await response.json();
+            alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}`);
+        }
+    }).catch(error => {
+        alert(error.message);
+    });
+});
+
+/**
  * TODOの取得
  */
 const loadTodos = () => {
@@ -69,11 +95,13 @@ const loadTodos = () => {
             todoList.innerHTML = '';
             for (const todo of json) {
                 const li = document.createElement('li');
-                let description = todo.description;
-                if (todo.done === true) {
-                    description = '<s>' + description + '</s>';
+                const description = DOMPurify.sanitize(todo.description);  // XSS対策
+                console.log(description);
+                if (todo.done === false) {
+                    li.innerHTML = `<input type="text" id="descriptionText${todo.id}" value="${description}"> <button class="updateButton" onclick="updateTodo(${todo.id})">更新</button><button class="doneButton" onclick="doneTodo(${todo.id})">完了</button><button class="deleteButton" onclick="deleteTodo(${todo.id})">削除</button>`;
+                } else {
+                    li.innerHTML = `<s>${description}</s> <button class="deleteButton" onclick="deleteTodo(${todo.id})">削除</button>`;
                 }
-                li.innerHTML = `${description} <button class="doneButton" onclick="doneTodo(${todo.id})">完了</button><button class="deleteButton" onclick="deleteTodo(${todo.id})">削除</button>`;
                 todoList.appendChild(li);
             }
         } else {
@@ -85,12 +113,36 @@ const loadTodos = () => {
 };
 
 /**
+ * TODOの更新
+ */
+const updateTodo = async todoId => {
+    const csrfToken = await getCsrfToken();
+    fetch(url(`/api/todos/${todoId}`), {
+        method: 'PUT',
+        credentials: "include",
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+        },
+        body: JSON.stringify({
+            description: document.getElementById(`descriptionText${todoId}`).value,
+        }),
+    }).then(async response => {
+        if (response.ok) {
+            loadTodos();
+        } else {
+            alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}`);
+        }
+    });
+};
+
+/**
  * TODOの完了
  */
 const doneTodo = async todoId => {
     const csrfToken = await getCsrfToken();
     fetch(url(`/api/todos/${todoId}`), {
-        method: 'PUT',
+        method: 'PATCH',
         credentials: "include",
         headers: {
             'X-CSRF-TOKEN': csrfToken
@@ -101,7 +153,7 @@ const doneTodo = async todoId => {
         } else {
             alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}`);
         }
-    })
+    });
 };
 
 /**
@@ -121,7 +173,7 @@ const deleteTodo = async todoId => {
         } else {
             alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}`);
         }
-    })
+    });
 };
 
 /**
@@ -136,16 +188,16 @@ document.getElementById('todoForm').addEventListener('submit', async e => {
         credentials: "include",
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
+            'X-CSRF-TOKEN': csrfToken,
         },
         body: JSON.stringify({
-            description: description
-        })
+            description: description,
+        }),
     }).then(async response => {
         if (response.ok) {
             loadTodos();
         } else {
             alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}`);
         }
-    })
+    });
 });

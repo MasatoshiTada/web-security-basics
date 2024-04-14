@@ -25,6 +25,11 @@ public class TodoService {
     }
 
     @Transactional(readOnly = false)
+    public int update(Todo todo) {
+        return todoRepository.update(todo);
+    }
+
+    @Transactional(readOnly = false)
     public int done(Integer todoId) {
         return todoRepository.done(todoId);
     }
