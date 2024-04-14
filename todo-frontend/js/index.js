@@ -69,7 +69,11 @@ const loadTodos = () => {
             todoList.innerHTML = '';
             for (const todo of json) {
                 const li = document.createElement('li');
-                li.innerHTML = todo.description;
+                let description = todo.description;
+                if (todo.done === true) {
+                    description = '<s>' + description + '</s>';
+                }
+                li.innerHTML = `${description} <button class="doneButton" onclick="doneTodo(${todo.id})">完了</button><button class="deleteButton" onclick="deleteTodo(${todo.id})">削除</button>`;
                 todoList.appendChild(li);
             }
         } else {
@@ -78,6 +82,46 @@ const loadTodos = () => {
     }).catch(error => {
         alert(error.message);
     });
+};
+
+/**
+ * TODOの完了
+ */
+const doneTodo = async todoId => {
+    const csrfToken = await getCsrfToken();
+    fetch(url(`/api/todos/${todoId}`), {
+        method: 'PUT',
+        credentials: "include",
+        headers: {
+            'X-CSRF-TOKEN': csrfToken
+        },
+    }).then(async response => {
+        if (response.ok) {
+            loadTodos();
+        } else {
+            alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}`);
+        }
+    })
+};
+
+/**
+ * TODOの削除
+ */
+const deleteTodo = async todoId => {
+    const csrfToken = await getCsrfToken();
+    fetch(url(`/api/todos/${todoId}`), {
+        method: 'DELETE',
+        credentials: "include",
+        headers: {
+            'X-CSRF-TOKEN': csrfToken
+        },
+    }).then(async response => {
+        if (response.ok) {
+            loadTodos();
+        } else {
+            alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}`);
+        }
+    })
 };
 
 /**

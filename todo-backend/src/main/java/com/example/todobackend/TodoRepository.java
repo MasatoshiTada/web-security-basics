@@ -18,7 +18,7 @@ public class TodoRepository {
     }
 
     public List<Todo> listAll() {
-        return jdbcClient.sql("SELECT id, description FROM todo ORDER BY id")
+        return jdbcClient.sql("SELECT id, description, done FROM todo ORDER BY id")
                 .query(new DataClassRowMapper<>(Todo.class))
                 .list();
     }
@@ -30,5 +30,19 @@ public class TodoRepository {
                 .update(keyHolder, "id");
         int newId = keyHolder.getKey().intValue();
         return todo.withId(newId);
+    }
+
+    public int done(Integer todoId) {
+        int rows = jdbcClient.sql("UPDATE todo SET done = true WHERE id=:id")
+                .param("id", todoId)
+                .update();
+        return rows;
+    }
+
+    public int delete(Integer todoId) {
+        int rows = jdbcClient.sql("DELETE FROM todo WHERE id=:id")
+                .param("id", todoId)
+                .update();
+        return rows;
     }
 }

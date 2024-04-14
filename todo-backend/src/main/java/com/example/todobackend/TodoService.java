@@ -23,4 +23,14 @@ public class TodoService {
     public Todo add(Todo todo) {
         return todoRepository.add(todo);
     }
+
+    @Transactional(readOnly = false)
+    public int done(Integer todoId) {
+        return todoRepository.done(todoId);
+    }
+
+    @Transactional(readOnly = false)
+    public int delete(Integer todoId) {
+        return todoRepository.delete(todoId);
+    }
 }
