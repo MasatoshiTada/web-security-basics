@@ -13,5 +13,6 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:9080")
                 .allowCredentials(true);
+        // TODO POSTのための設定追加
     }
 }
