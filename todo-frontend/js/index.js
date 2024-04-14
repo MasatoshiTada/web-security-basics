@@ -1,5 +1,5 @@
 const url = (path) => {
-    return 'https://fxqpckzcbm.ap-northeast-1.awsapprunner.com' + path
+    return 'https://gmxbhyakp6.ap-northeast-1.awsapprunner.com' + path
 }
 
 /**
@@ -25,7 +25,7 @@ const getCsrfToken = async () => {
 /**
  * ログイン処理
  */
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
+document.getElementById('loginForm').addEventListener('submit', async e => {
     e.preventDefault();
     const username = document.getElementById('usernameText').value;
     const password = document.getElementById('passwordText').value;
@@ -83,25 +83,25 @@ const loadTodos = () => {
 /**
  * TODOの追加
  */
-document.getElementById('todoForm').addEventListener('submit', e => {
+document.getElementById('todoForm').addEventListener('submit', async e => {
     e.preventDefault();
     const description = document.getElementById('descriptionText').value;
+    const csrfToken = await getCsrfToken();
     fetch(url('/api/todos'), {
         method: 'POST',
         credentials: "include",
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': getCsrfToken()
-            // TODO CORSヘッダー追加
+            'X-CSRF-TOKEN': csrfToken
         },
         body: JSON.stringify({
             description: description
         })
-    }).then(response => {
+    }).then(async response => {
         if (response.ok) {
             loadTodos();
         } else {
-            alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}、エラーメッセージ=${json.detail}`);
+            alert(`サーバーからエラーがレスポンスされました。ステータスコード=${response.status}`);
         }
     })
 });

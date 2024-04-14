@@ -64,8 +64,6 @@ resource "aws_apprunner_service" "todo_backend" {
     image_repository {
       image_configuration {
         port                        = "8080"
-        runtime_environment_secrets = {
-        }
         runtime_environment_variables = {
           TZ                     = "Asia/Tokyo"
         }
@@ -81,10 +79,10 @@ resource "aws_apprunner_service" "todo_backend" {
   health_check_configuration {
     protocol            = "HTTP"
     path                = "/actuator/health"
-    interval            = 5
+    interval            = 20
     timeout             = 1
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
+    healthy_threshold   = 1
+    unhealthy_threshold = 1
   }
 
   instance_configuration {
