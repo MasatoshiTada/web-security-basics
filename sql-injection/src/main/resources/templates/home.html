@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ホーム画面</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <p><span th:text="${session.user.name}">ユーザー名</span>さんログイン中</p>
+    <form th:action="@{/logout}" method="post">
+        <button>ログアウト</button>
+    </form>
+</body>
+</html>

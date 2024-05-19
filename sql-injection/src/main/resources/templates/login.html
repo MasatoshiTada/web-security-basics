@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン画面</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <p class="error" th:if="${param.error}">メールアドレスまたはパスワードが違います。</p>
+    <form th:action="@{/login}" method="post">
+        <label>
+            メールアドレス
+            <input type="text" name="email">
+        </label>
+        <label>
+            パスワード
+            <input type="text" name="password">
+        </label>
+        <button>ログイン</button>
+    </form>
+</body>
+</html>
