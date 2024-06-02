@@ -34,12 +34,12 @@ public class UserRepository {
         String sql = """
                 SELECT email, name, password
                 FROM users
-                WHERE email = ?
-                AND password = ?
+                WHERE email = :email
+                AND password = :password
                 """;
          Optional<User> userOptional = jdbcClient.sql(sql)
-                .param(email)
-                .param(password)
+                .param("email", email)
+                .param("password", password)
                 .query(new DataClassRowMapper<>(User.class))
                 .optional();
         return userOptional;

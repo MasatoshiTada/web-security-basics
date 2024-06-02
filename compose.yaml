@@ -10,3 +10,12 @@ services:
       - "./todo-frontend:/usr/share/nginx/html"
     environment:
       - TZ=Asia/Tokyo
+  postgresql:
+    container_name: postgres
+    image: postgres:16.3
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres

@@ -7,6 +7,7 @@
 </head>
 <body>
     <p class="error" th:if="${param.error}">メールアドレスまたはパスワードが違います。</p>
+    <p th:text="${message}">メッセージ</p>
     <form th:action="@{/login}" method="post">
         <label>
             メールアドレス
